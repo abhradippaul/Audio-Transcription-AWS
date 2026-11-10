@@ -1,0 +1,7 @@
+.terraform
+*.zip
+*png
+venv
+build
+package
+!Diagram.png
