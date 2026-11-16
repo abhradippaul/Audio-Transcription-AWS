@@ -1,8 +1,7 @@
 FROM public.ecr.aws/lambda/python:3.13
 
-# Install FFmpeg
-RUN dnf install -y ffmpeg \
-    && dnf clean all
+# Install FFmpeg using static binaries
+COPY --from=mwader/static-ffmpeg:latest /ffmpeg /ffprobe /usr/local/bin/
 
 # Install Python dependencies
 COPY requirements.txt ${LAMBDA_TASK_ROOT}
@@ -10,11 +9,12 @@ COPY requirements.txt ${LAMBDA_TASK_ROOT}
 RUN pip install --no-cache-dir \
     -r requirements.txt
 
-# Copy application
-COPY worker.py ${LAMBDA_TASK_ROOT}
+# Pre-download Whisper model into the image
+ENV WHISPER_MODEL_DIR=/opt/whisper
+RUN mkdir -p /opt/whisper && python -c "import whisper; whisper.load_model('base', download_root='/opt/whisper')"
 
-# Download Whisper model during image build
-RUN python -c "import whisper; whisper.load_model('base')"
+# Copy application
+COPY main.py ${LAMBDA_TASK_ROOT}
 
 # Lambda handler
-CMD ["worker.lambda_handler"]
+CMD ["main.lambda_handler"]

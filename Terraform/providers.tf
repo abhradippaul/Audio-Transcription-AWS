@@ -8,8 +8,8 @@ terraform {
 }
 
 provider "aws" {
-  region  = "ap-south-1"
-  profile = "pa-abhradip"
+  region  = var.aws_region
+  profile = var.aws_profile
 
   default_tags {
     tags = {

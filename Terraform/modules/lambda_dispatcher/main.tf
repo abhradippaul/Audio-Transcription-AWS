@@ -22,15 +22,6 @@ resource "aws_iam_role_policy_attachment" "lambda_basic_execution" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
 }
 
-data "aws_iam_policy_document" "lambda_s3_read" {
-  statement {
-    effect = "Allow"
-
-    actions   = ["s3:GetObject"]
-    resources = ["${var.s3_bucket_arn}/*"]
-  }
-}
-
 data "aws_iam_policy_document" "lambda_sqs_send" {
   statement {
     effect = "Allow"
@@ -38,13 +29,6 @@ data "aws_iam_policy_document" "lambda_sqs_send" {
     actions   = ["sqs:SendMessage", "sqs:SendMessageBatch"]
     resources = [var.sqs_arn]
   }
-}
-
-resource "aws_iam_role_policy" "lambda_s3_read" {
-  name = "lambda_s3_read_policy"
-  role = aws_iam_role.this.id
-
-  policy = data.aws_iam_policy_document.lambda_s3_read.json
 }
 
 resource "aws_iam_role_policy" "lambda_sqs_send" {
@@ -83,6 +67,7 @@ resource "aws_lambda_function" "this" {
   role          = aws_iam_role.this.arn
   handler       = var.handler
   code_sha256   = data.archive_file.this.output_base64sha256
+  architectures = ["arm64"]
 
   runtime = var.runtime
 
@@ -97,7 +82,7 @@ resource "aws_lambda_function" "this" {
   depends_on = [
     aws_cloudwatch_log_group.this,
     aws_iam_role_policy_attachment.lambda_basic_execution,
-    aws_iam_role_policy.lambda_s3_read,
+    # aws_iam_role_policy.lambda_s3_read,
     aws_iam_role_policy.lambda_sqs_send
   ]
 

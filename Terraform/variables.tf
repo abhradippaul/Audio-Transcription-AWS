@@ -1,7 +1,19 @@
+variable "aws_profile" {
+  type        = string
+  description = "AWS CLI profile to use."
+  default     = "pa-abhradip"
+}
+
+variable "aws_region" {
+  type        = string
+  description = "AWS region to deploy to."
+  default     = "ap-south-1"
+}
+
 variable "bucket_name" {
   type        = string
   description = "The name of the S3 bucket."
-  default     = "audio-transcription-aws"
+  default     = "audio-transcription-aws-bucket"
 }
 
 variable "tags" {
@@ -50,6 +62,24 @@ variable "lambda_runtime" {
   default     = "python3.13"
 }
 
+variable "lambda_worker_memory_size" {
+  type        = number
+  description = "The memory size of the worker Lambda function."
+  default     = 3008
+}
+
+variable "lambda_worker_timeout" {
+  type        = number
+  description = "The timeout of the worker Lambda function."
+  default     = 900
+}
+
+variable "lambda_worker_architecture" {
+  type        = string
+  description = "The architecture of the worker Lambda function (arm64 or x86_64)."
+  default     = "x86_64"
+}
+
 variable "sqs_name" {
   type        = string
   description = "The name of the SQS queue."
@@ -84,4 +114,16 @@ variable "sqs_queue_visibility_timeout_seconds" {
   type        = number
   description = "The visibility timeout of the SQS queue."
   default     = 300
+}
+
+variable "ecr_repository_name" {
+  type        = string
+  description = "The name of the ECR repository."
+  default     = "audio-transcription-aws-ecr"
+}
+
+variable "lambda_worker_ephemeral_storage" {
+  type        = number
+  description = "The ephemeral storage size of the worker Lambda function."
+  default     = 10240
 }
