@@ -201,6 +201,3 @@ To destroy all provisioned AWS resources when finished:
 cd Terraform
 terraform destroy
 ```
-
-> [!CAUTION]
-> The S3 bucket is configured with `force_destroy = true`. Running `terraform destroy` will delete the bucket along with all uploaded audio files and transcripts.
