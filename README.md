@@ -10,18 +10,6 @@ The system is designed to be fully event-driven, decoupled, and scalable. Audio 
 
 ![Architecture Diagram](Diagram.png)
 
-```mermaid
-flowchart LR
-    User([User / Client]) -->|Upload .mp3| S3Input[("Amazon S3<br/>audio-input/")]
-    S3Input -->|s3:ObjectCreated:*| Dispatcher["Dispatcher Lambda<br/>(Python 3.13)"]
-    Dispatcher -->|Enqueue Job / S3 URI| SQS["Amazon SQS Queue<br/>(Buffer & Retry)"]
-    SQS -->|Event Source Mapping<br/>Batch Size = 1| Worker["Worker Lambda<br/>(Docker Container)"]
-    ECR[("Amazon ECR<br/>Image Registry")] -.->|Container Image| Worker
-    Worker -->|Download Audio| S3Input
-    Worker -->|Transcribe via Whisper| Worker
-    Worker -->|Save .txt Transcript| S3Output[("Amazon S3<br/>audio-output/")]
-```
-
 ### Pipeline Workflow
 
 1. **Ingestion**: An audio file (`.mp3`) is uploaded to the S3 bucket under the `audio-input/` prefix (e.g., `s3://<bucket>/audio-input/sample.mp3`).
