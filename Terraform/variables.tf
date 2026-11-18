@@ -71,7 +71,7 @@ variable "lambda_worker_memory_size" {
 variable "lambda_worker_timeout" {
   type        = number
   description = "The timeout of the worker Lambda function."
-  default     = 900
+  default     = 300
 }
 
 variable "lambda_worker_architecture" {
